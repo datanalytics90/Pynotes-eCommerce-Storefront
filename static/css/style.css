@@ -61,7 +61,7 @@ h1,h2,h3,h4,h5{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy)
 .footer h5{color:#fff;font-size:1rem}
 .footer a{color:#c9d7e3;text-decoration:none}
 .footer a:hover{color:#5bd1d9}
-.footer-logo{width:185px;filter:brightness(0) invert(1);opacity:.95}
+.footer-logo{width:185px;height:auto}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:40px;padding-top:20px;font-size:.85rem}
 .reveal{opacity:0;transform:translateY(25px);transition:opacity .7s ease,transform .7s ease}
 .reveal.show{opacity:1;transform:none}

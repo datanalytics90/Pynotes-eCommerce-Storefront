@@ -193,6 +193,31 @@ class TestCheckoutView:
         assert order.status == Order.Status.PROCESSING
         assert response.url == reverse("orders:success", kwargs={"order_number": order.order_number})
 
+    def test_prepaid_checkout_degrades_gracefully_when_razorpay_rejects_request(self, client, settings, monkeypatch):
+        settings.RAZORPAY_KEY_ID = "rzp_test_invalid"
+        settings.RAZORPAY_KEY_SECRET = "invalid_secret"
+        from razorpay.errors import BadRequestError
+
+        def _raise(order):
+            raise BadRequestError("Invalid key")
+
+        monkeypatch.setattr(order_services, "create_razorpay_order", _raise)
+
+        product = ProductFactory(price=Decimal("499.00"), stock=10)
+        client.post(reverse("cart:add_to_cart", kwargs={"slug": product.slug}), {"quantity": 1})
+
+        response = client.post(
+            reverse("orders:checkout"),
+            {"email": "buyer@example.com", "payment_method": "prepaid", **CHECKOUT_POST_DATA},
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        order = Order.objects.get(email="buyer@example.com")
+        assert order.status == Order.Status.FAILED
+        messages = list(response.context["messages"])
+        assert any("couldn't reach Razorpay" in str(m) for m in messages)
+
     def test_order_history_requires_login(self, client):
         response = client.get(reverse("orders:order_history"))
         assert response.status_code == 302

@@ -1,9 +1,12 @@
+import logging
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from razorpay.errors import BadRequestError, GatewayError, ServerError
 
 from apps.cart import services as cart_services
 
@@ -11,6 +14,8 @@ from . import services
 from .forms import CheckoutForm, IssueReportForm, OrderTrackingForm
 from .invoice import invoice_response
 from .models import Order
+
+logger = logging.getLogger(__name__)
 
 
 def checkout(request):
@@ -65,7 +70,19 @@ def checkout(request):
                 )
                 return redirect("orders:success", order_number=order.order_number)
 
-            services.create_razorpay_order(order)
+            try:
+                services.create_razorpay_order(order)
+            except (BadRequestError, GatewayError, ServerError, ConnectionError) as exc:
+                logger.error("Razorpay order creation failed for %s: %s", order.order_number, exc)
+                order.status = Order.Status.FAILED
+                order.save(update_fields=["status"])
+                order.status_history.create(status=Order.Status.FAILED, note="Razorpay order creation failed")
+                messages.error(
+                    request,
+                    "We couldn't reach Razorpay to start your payment. Please try again, or choose "
+                    "Cash on Delivery.",
+                )
+                return redirect("orders:checkout")
             return redirect("orders:razorpay_payment", order_number=order.order_number)
     else:
         form = CheckoutForm(initial=initial)
