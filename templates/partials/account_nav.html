@@ -1,0 +1,14 @@
+<div class="card-clean p-3 mb-4 mb-lg-0">
+  <ul class="nav flex-lg-column gap-1">
+    <li class="nav-item"><a class="nav-link {% if active == 'dashboard' %}fw-bold{% endif %}" style="color:var(--navy)" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link {% if active == 'orders' %}fw-bold{% endif %}" style="color:var(--navy)" href="{% url 'orders:order_history' %}">Orders</a></li>
+    <li class="nav-item"><a class="nav-link {% if active == 'addresses' %}fw-bold{% endif %}" style="color:var(--navy)" href="{% url 'accounts:addresses' %}">Addresses</a></li>
+    <li class="nav-item"><a class="nav-link {% if active == 'details' %}fw-bold{% endif %}" style="color:var(--navy)" href="{% url 'accounts:account_details' %}">Account details</a></li>
+    <li class="nav-item"><a class="nav-link" style="color:var(--navy)" href="{% url 'orders:order_tracking' %}">Track an order</a></li>
+    <li class="nav-item">
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+        <button type="submit" class="nav-link border-0 bg-transparent p-0 text-danger">Sign out</button>
+      </form>
+    </li>
+  </ul>
+</div>

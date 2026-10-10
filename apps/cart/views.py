@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from apps.catalog.models import Coupon, Product
@@ -19,17 +20,30 @@ def add_to_cart(request, slug):
     quantity = int(request.POST.get("quantity", 1) or 1)
     if quantity < 1:
         quantity = 1
-    if not product.is_digital and quantity > product.stock:
-        quantity = max(product.stock, 0)
-    if not product.is_digital and product.stock <= 0:
+    available = product.available_stock
+    if quantity > available:
+        quantity = max(available, 0)
+    if available <= 0:
         messages.error(request, f"{product.name} is out of stock.")
     else:
         services.add_item(request.cart, product, quantity)
         messages.success(request, f"Added {product.name} to your cart.")
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({"ok": True, "total_items": request.cart.total_items})
+        cart_html = render_to_string("partials/cart_drawer.html", {"cart": request.cart}, request=request)
+        return JsonResponse({"ok": True, "total_items": request.cart.total_items, "cart_html": cart_html})
     return redirect(request.META.get("HTTP_REFERER", "cart:cart_detail"))
+
+
+@require_POST
+def buy_now(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+    quantity = int(request.POST.get("quantity", 1) or 1)
+    if quantity < 1:
+        quantity = 1
+    quantity = min(quantity, max(product.available_stock, 0)) or 1
+    services.add_item(request.cart, product, quantity)
+    return redirect("orders:checkout")
 
 
 @require_POST

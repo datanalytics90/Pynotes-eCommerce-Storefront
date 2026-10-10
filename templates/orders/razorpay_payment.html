@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Payment | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section" style="min-height:60vh"><div class="container text-center">
+  <div class="eyebrow">Secure payment</div>
+  <h1 class="h3 mt-2">Complete your payment</h1>
+  <p class="text-secondary">Order <span class="font-monospace">{{ order.order_number }}</span> &middot; &#8377;{{ order.total }}</p>
+  <div id="razorpay-status" class="text-secondary">Opening Razorpay checkout&hellip;</div>
+  <button id="retry-payment" class="btn btn-brand mt-4" style="display:none">Retry payment</button>
+  <a href="{% url 'orders:checkout' %}" class="btn btn-outline-dark mt-2 d-block d-md-inline-block">Back to checkout</a>
+</div></section>
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function getCookie(name){const m=document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');return m?m.pop():'';}
+
+function openRazorpay(){
+  const options = {
+    key: "{{ razorpay_key_id }}",
+    amount: {{ amount_paise }},
+    currency: "INR",
+    name: "{{ SITE_NAME }}",
+    description: "Order {{ order.order_number }}",
+    order_id: "{{ order.razorpay_order_id }}",
+    prefill: { email: "{{ order.email }}", contact: "{{ order.shipping_phone_number }}" },
+    theme: { color: "#0B3561" },
+    handler: function (response) {
+      document.getElementById('razorpay-status').textContent = 'Verifying payment…';
+      fetch("{% url 'orders:razorpay_verify' order.order_number %}", {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken': getCookie('csrftoken')},
+        body: new URLSearchParams(response),
+      }).then(r => r.json()).then(data => {
+        if (data.ok) { window.location = data.redirect_url; }
+        else { document.getElementById('razorpay-status').textContent = data.error || 'Verification failed.'; document.getElementById('retry-payment').style.display='inline-block'; }
+      });
+    },
+    modal: {
+      ondismiss: function () {
+        document.getElementById('razorpay-status').textContent = 'Payment window closed.';
+        document.getElementById('retry-payment').style.display = 'inline-block';
+      }
+    }
+  };
+  const rzp = new Razorpay(options);
+  rzp.on('payment.failed', function (response) {
+    fetch("{% url 'orders:razorpay_failed' order.order_number %}", {
+      method: 'POST', headers: {'X-CSRFToken': getCookie('csrftoken')},
+    });
+    document.getElementById('razorpay-status').textContent = 'Payment failed. Please try again.';
+    document.getElementById('retry-payment').style.display = 'inline-block';
+  });
+  rzp.open();
+}
+document.getElementById('retry-payment').addEventListener('click', openRazorpay);
+openRazorpay();
+</script>
+{% endblock %}

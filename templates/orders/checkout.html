@@ -1,43 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Checkout — {{ SITE_NAME }}{% endblock %}
+{% block title %}Checkout | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
-  <h1 class="text-2xl font-extrabold text-slate-900 mb-8">Checkout</h1>
-  <div class="grid lg:grid-cols-3 gap-8">
-    <form method="post" class="lg:col-span-2 card p-6 space-y-4">
-      {% csrf_token %}
-      <h2 class="font-bold text-slate-900 mb-2">Contact & shipping details</h2>
-      {% for field in form %}
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}<p class="text-sm text-red-600 mt-1">{{ field.errors.0 }}</p>{% endif %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="btn-primary w-full text-base py-3 mt-4">
-        Continue to payment
-      </button>
-      <p class="text-xs text-slate-400 text-center">
-        You'll be redirected to Stripe's secure checkout to complete payment.
-      </p>
-    </form>
-
-    <div class="card p-6 h-fit space-y-3">
-      <h2 class="font-bold text-slate-900">Order summary</h2>
-      {% for item in cart.items.all %}
-        <div class="flex justify-between text-sm">
-          <span class="text-slate-600">{{ item.quantity }} × {{ item.product.name }}</span>
-          <span class="font-medium">${{ item.line_total }}</span>
-        </div>
-      {% endfor %}
-      <dl class="space-y-2 text-sm border-t border-slate-200 pt-3">
-        <div class="flex justify-between"><dt class="text-slate-500">Subtotal</dt><dd>${{ cart.subtotal }}</dd></div>
-        {% if cart.discount_total %}
-          <div class="flex justify-between"><dt class="text-slate-500">Discount</dt><dd class="text-green-700">-${{ cart.discount_total }}</dd></div>
-        {% endif %}
-        <div class="flex justify-between text-base font-bold"><dt>Total</dt><dd>${{ cart.total }}</dd></div>
-      </dl>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Checkout</div>
+  <h1>Finish your order.</h1>
+  <p class="text-secondary">Guest checkout and account checkout are both supported.</p>
+</div></section>
+<section class="section pt-5"><div class="container">
+<form method="post">
+{% csrf_token %}
+<div class="row g-5">
+<div class="col-lg-7">
+  <div class="card-clean p-4">
+    <h2 class="h4 mb-4">Billing &amp; shipping</h2>
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">First name</label>{{ form.first_name }}</div>
+      <div class="col-md-6"><label class="form-label">Last name</label>{{ form.last_name }}</div>
+      <div class="col-12"><label class="form-label">Email</label>{{ form.email }}</div>
+      <div class="col-12"><label class="form-label">Phone</label>{{ form.phone_number }}</div>
+      <div class="col-12"><label class="form-label">Address</label>{{ form.line1 }}</div>
+      <div class="col-12"><label class="form-label">Address line 2 (optional)</label>{{ form.line2 }}</div>
+      <div class="col-md-6"><label class="form-label">City</label>{{ form.city }}</div>
+      <div class="col-md-6"><label class="form-label">State</label>{{ form.state }}</div>
+      <div class="col-md-6"><label class="form-label">PIN code</label>{{ form.postal_code }}</div>
+      {{ form.country }}
+    </div>
+    {% if form.errors %}<p class="text-danger small mt-3">Please check the highlighted fields.</p>{% endif %}
+    <hr class="my-4">
+    <h2 class="h4">Payment</h2>
+    <div class="form-check border rounded-3 p-3 mb-2">
+      <input class="form-check-input" type="radio" name="payment_method" value="prepaid" id="pay-prepaid" checked>
+      <label class="form-check-label ms-2" for="pay-prepaid">
+        <strong>Prepaid</strong>{% if site_settings.prepaid_discount_percent %} — {{ site_settings.prepaid_discount_percent }}% off{% endif %}<br>
+        <small class="text-secondary">Razorpay: UPI, cards and supported wallet methods.</small>
+      </label>
+    </div>
+    <div class="form-check border rounded-3 p-3">
+      <input class="form-check-input" type="radio" name="payment_method" value="cod" id="pay-cod">
+      <label class="form-check-label ms-2" for="pay-cod">
+        <strong>Cash on Delivery</strong>{% if site_settings.cod_fee %} — &#8377;{{ site_settings.cod_fee }} fee{% endif %}<br>
+        <small class="text-secondary">We'll confirm by phone or WhatsApp before shipping.</small>
+      </label>
     </div>
   </div>
-</section>
+</div>
+<div class="col-lg-5">
+  <div class="card-clean p-4">
+    <div class="eyebrow">Your order</div>
+    {% for item in cart.items.all %}
+      <div class="d-flex justify-content-between mt-3"><span>{{ item.product.name }} &times; {{ item.quantity }}</span><strong>&#8377;{{ item.line_total }}</strong></div>
+    {% endfor %}
+    <hr>
+    <div class="d-flex justify-content-between"><span>Subtotal</span><strong>&#8377;{{ cart.subtotal }}</strong></div>
+    {% if cart.discount_total %}<div class="d-flex justify-content-between mt-1"><span>Coupon</span><strong class="text-success">-&#8377;{{ cart.discount_total }}</strong></div>{% endif %}
+    <div class="d-flex justify-content-between mt-1"><span>Shipping</span><strong>Free</strong></div>
+    <hr>
+    <div class="d-flex justify-content-between"><strong>Total (approx.)</strong><strong class="price">&#8377;{{ cart.total }}</strong></div>
+    <button type="submit" class="btn btn-brand w-100 mt-4">Place Order</button>
+    <p class="small text-secondary mt-3">Prepaid orders are processed by Razorpay. The final total (including any COD fee or prepaid discount) is confirmed on the next step.</p>
+  </div>
+</div>
+</div>
+</form>
+</div></section>
 {% endblock %}

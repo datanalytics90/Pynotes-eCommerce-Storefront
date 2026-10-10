@@ -1,32 +1,39 @@
 {% extends "base.html" %}
-{% block title %}Order history — {{ SITE_NAME }}{% endblock %}
+{% block title %}My orders | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-  <h1 class="text-2xl font-extrabold text-slate-900 mb-8">Order history</h1>
-  {% if orders %}
-    <div class="space-y-4">
-      {% for order in orders %}
-        <a href="{% url 'orders:order_detail' order.order_number %}" class="card p-5 flex items-center justify-between hover:border-brand-400 transition">
-          <div>
-            <p class="font-mono text-sm text-slate-500">{{ order.order_number }}</p>
-            <p class="text-xs text-slate-400">{{ order.created_at|date:"M d, Y" }}</p>
-          </div>
-          <span class="badge
-            {% if order.status == 'paid' %}bg-green-100 text-green-800
-            {% elif order.status == 'pending' %}bg-amber-100 text-amber-800
-            {% elif order.status == 'cancelled' or order.status == 'refunded' %}bg-red-100 text-red-800
-            {% else %}bg-slate-100 text-slate-800{% endif %}">
-            {{ order.get_status_display }}
-          </span>
-          <p class="font-bold text-slate-900">${{ order.total }}</p>
-        </a>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="card p-10 text-center">
-      <p class="text-slate-600 mb-4">You haven't placed any orders yet.</p>
-      <a href="{% url 'catalog:product_list' %}" class="btn-primary">Start shopping</a>
-    </div>
-  {% endif %}
-</section>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">My account</div>
+  <h1>Order history.</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row g-4">
+<div class="col-lg-3">{% include "partials/account_nav.html" with active="orders" %}</div>
+<div class="col-lg-9">
+{% if orders %}
+  <div class="table-brand p-2">
+  <table class="table align-middle mb-0">
+    <thead><tr><th>Order</th><th>Date</th><th>Payment</th><th>Status</th><th>Total</th><th></th></tr></thead>
+    <tbody>
+    {% for order in orders %}
+      <tr>
+        <td class="font-monospace small">{{ order.order_number|truncatechars:13 }}</td>
+        <td>{{ order.created_at|date:"M d, Y" }}</td>
+        <td>{{ order.get_payment_method_display }}</td>
+        <td><span class="badge rounded-pill text-bg-light">{{ order.get_status_display }}</span></td>
+        <td><strong>&#8377;{{ order.total }}</strong></td>
+        <td><a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-sm btn-outline-dark rounded-pill">View</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% else %}
+  <div class="card-clean p-5 text-center">
+    <p class="text-secondary mb-4">You haven't placed any orders yet.</p>
+    <a href="{% url 'catalog:product_list' %}" class="btn btn-brand">Start shopping</a>
+  </div>
+{% endif %}
+</div>
+</div>
+</div></section>
 {% endblock %}

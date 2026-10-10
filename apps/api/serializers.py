@@ -53,7 +53,8 @@ class ProductDetailSerializer(ProductListSerializer):
 
     class Meta(ProductListSerializer.Meta):
         fields = ProductListSerializer.Meta.fields + [
-            "description", "short_description", "sku", "stock", "is_digital", "images", "reviews",
+            "description", "short_description", "sku", "available_stock", "is_bundle", "hsn_code",
+            "images", "reviews",
         ]
 
 
@@ -95,8 +96,9 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            "id", "order_number", "email", "status", "subtotal", "discount_total",
-            "shipping_cost", "tax_total", "total", "items", "created_at", "paid_at",
+            "id", "order_number", "email", "status", "payment_method", "subtotal", "discount_total",
+            "prepaid_discount_total", "cod_fee", "shipping_cost", "tax_total", "total", "items",
+            "courier_name", "awb_number", "tracking_url", "created_at", "paid_at", "shipped_at", "delivered_at",
         ]
         read_only_fields = fields
 

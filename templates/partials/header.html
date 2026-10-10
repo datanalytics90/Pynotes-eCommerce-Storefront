@@ -1,76 +1,37 @@
 {% load static %}
-<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200" x-data="{ mobileOpen: false }">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between gap-4">
-      <a href="{% url 'core:home' %}" class="flex items-center gap-2 shrink-0">
-        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-white font-bold">P</span>
-        <span class="text-lg font-extrabold tracking-tight text-slate-900">{{ SITE_NAME }}</span>
-      </a>
-
-      <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
-        <a href="{% url 'catalog:product_list' %}" class="hover:text-brand-600">Shop all</a>
-        {% for category in nav_categories %}
-          <a href="{{ category.get_absolute_url }}" class="hover:text-brand-600">{{ category.name }}</a>
+<header class="site-header">
+<nav class="navbar navbar-expand-lg">
+<div class="container">
+<a class="navbar-brand" href="{% url 'core:home' %}"><img src="{% static 'img/brand/pynotes-logo.png' %}" alt="PyNotes Learn Write Grow"></a>
+<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Menu"><span class="navbar-toggler-icon"></span></button>
+<div class="collapse navbar-collapse" id="mainNav">
+<ul class="navbar-nav mx-auto gap-lg-2">
+<li class="nav-item"><a class="nav-link {% if request.resolver_match.view_name == 'core:home' %}active{% endif %}" href="{% url 'core:home' %}">Home</a></li>
+<li class="nav-item"><a class="nav-link {% if 'catalog' in request.resolver_match.namespace|default:'' %}active{% endif %}" href="{% url 'catalog:product_list' %}">Shop</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'core:about' %}">About</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'core:faq' %}">FAQ</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'core:contact' %}">Contact</a></li>
+{% for cat in nav_categories %}
+  {% if cat.children.all %}
+    <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ cat.name }}</a>
+      <ul class="dropdown-menu border-0 shadow">
+        {% for child in cat.children.all %}
+          <li><a class="dropdown-item" href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
         {% endfor %}
-        <a href="{% url 'core:about' %}" class="hover:text-brand-600">About</a>
-        <a href="{% url 'core:contact' %}" class="hover:text-brand-600">Contact</a>
-      </nav>
-
-      <form action="{% url 'catalog:product_list' %}" method="get" class="hidden md:flex flex-1 max-w-sm">
-        <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search products…"
-               class="form-input rounded-r-none" />
-        <button type="submit" class="btn-primary rounded-l-none px-3" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </form>
-
-      <div class="flex items-center gap-3">
-        {% if user.is_authenticated %}
-          <a href="{% url 'accounts:profile' %}" class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-brand-600">
-            Hi, {{ user.first_name|default:user.email }}
-          </a>
-        {% else %}
-          <a href="{% url 'accounts:login' %}" class="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-brand-600">Sign in</a>
-        {% endif %}
-
-        <a href="{% url 'cart:cart_detail' %}" class="relative inline-flex items-center p-2 text-slate-700 hover:text-brand-600">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.981-4.804 2.531-7.436A1.125 1.125 0 0019.282 5.5H5.106M7.5 14.25L5.106 5.5M7.5 14.25l-1.591 6.236a1.125 1.125 0 001.091 1.389h9.818a1.125 1.125 0 001.091-1.389L16.318 14.25" />
-          </svg>
-          <span class="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-bold text-white">
-            {{ cart.total_items|default:0 }}
-          </span>
-        </a>
-
-        <button class="lg:hidden p-2 text-slate-700" @click="mobileOpen = !mobileOpen" aria-label="Toggle menu">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div x-show="mobileOpen" x-cloak @click.outside="mobileOpen = false" class="lg:hidden border-t border-slate-200 py-3 space-y-1">
-      <form action="{% url 'catalog:product_list' %}" method="get" class="flex mb-2">
-        <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search products…" class="form-input rounded-r-none" />
-        <button type="submit" class="btn-primary rounded-l-none px-3">Go</button>
-      </form>
-      <a href="{% url 'catalog:product_list' %}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">Shop all</a>
-      {% for category in nav_categories %}
-        <a href="{{ category.get_absolute_url }}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">{{ category.name }}</a>
-      {% endfor %}
-      <a href="{% url 'core:about' %}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">About</a>
-      <a href="{% url 'core:contact' %}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">Contact</a>
-      {% if user.is_authenticated %}
-        <a href="{% url 'accounts:profile' %}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">My account</a>
-        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
-          <button class="block w-full text-left px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">Sign out</button>
-        </form>
-      {% else %}
-        <a href="{% url 'accounts:login' %}" class="block px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded">Sign in</a>
-      {% endif %}
-    </div>
-  </div>
+      </ul>
+    </li>
+  {% endif %}
+{% endfor %}
+</ul>
+<div class="d-flex align-items-center gap-2">
+{% if user.is_authenticated %}
+  <a class="btn btn-sm btn-outline-primary rounded-pill" style="border-color:var(--navy);color:var(--navy)" href="{% url 'accounts:dashboard' %}">Account</a>
+{% else %}
+  <a class="btn btn-sm btn-outline-primary rounded-pill" style="border-color:var(--navy);color:var(--navy)" href="{% url 'accounts:login' %}">Account</a>
+{% endif %}
+<button class="btn btn-sm btn-brand" data-open-cart>Cart <span class="badge bg-light text-dark rounded-pill" data-cart-count>{{ cart.total_items|default:0 }}</span></button>
+</div>
+</div>
+</div>
+</nav>
 </header>

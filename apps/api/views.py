@@ -31,7 +31,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "slug"
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["category__slug", "is_featured", "is_digital"]
+    filterset_fields = ["category__slug", "is_featured", "is_bundle"]
     search_fields = ["name", "description"]
     ordering_fields = ["price", "created_at", "name"]
 

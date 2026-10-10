@@ -1,44 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Order {{ order.order_number }} — {{ SITE_NAME }}{% endblock %}
+{% block title %}Order {{ order.order_number }} | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-  <a href="{% url 'orders:order_history' %}" class="text-sm text-brand-600 font-medium">&larr; Back to orders</a>
-  <div class="flex items-center justify-between mt-4 mb-8">
-    <h1 class="text-2xl font-extrabold text-slate-900">Order {{ order.order_number }}</h1>
-    <span class="badge
-      {% if order.status == 'paid' %}bg-green-100 text-green-800
-      {% elif order.status == 'pending' %}bg-amber-100 text-amber-800
-      {% elif order.status == 'cancelled' or order.status == 'refunded' %}bg-red-100 text-red-800
-      {% else %}bg-slate-100 text-slate-800{% endif %}">
-      {{ order.get_status_display }}
-    </span>
+<section class="page-hero"><div class="container">
+  <a href="{% url 'orders:order_history' %}" class="small text-decoration-none">&larr; Back to orders</a>
+  <div class="d-flex align-items-center justify-content-between mt-2">
+    <h1 class="h3 mb-0">Order {{ order.order_number }}</h1>
+    <span class="badge rounded-pill text-bg-light">{{ order.get_status_display }}</span>
+  </div>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row g-4">
+<div class="col-lg-8">
+  <div class="card-clean p-4 mb-4">
+    <h2 class="h5 mb-3">Items</h2>
+    {% for item in order.items.all %}
+      <div class="d-flex justify-content-between small mb-2"><span>{{ item.quantity }} &times; {{ item.product_name }}</span><strong>&#8377;{{ item.line_total }}</strong></div>
+    {% endfor %}
+    <hr>
+    <div class="d-flex justify-content-between small"><span>Subtotal</span><span>&#8377;{{ order.subtotal }}</span></div>
+    {% if order.discount_total %}<div class="d-flex justify-content-between small text-success"><span>Coupon discount</span><span>-&#8377;{{ order.discount_total }}</span></div>{% endif %}
+    {% if order.prepaid_discount_total %}<div class="d-flex justify-content-between small text-success"><span>Prepaid discount</span><span>-&#8377;{{ order.prepaid_discount_total }}</span></div>{% endif %}
+    {% if order.cod_fee %}<div class="d-flex justify-content-between small"><span>COD fee</span><span>&#8377;{{ order.cod_fee }}</span></div>{% endif %}
+    <div class="d-flex justify-content-between small"><span>Shipping</span><span>&#8377;{{ order.shipping_cost }}</span></div>
+    <div class="d-flex justify-content-between mt-2"><strong>Total</strong><strong class="price">&#8377;{{ order.total }}</strong></div>
   </div>
 
-  <div class="grid md:grid-cols-3 gap-8">
-    <div class="md:col-span-2 card p-6 space-y-3">
-      <h2 class="font-bold text-slate-900 mb-2">Items</h2>
-      {% for item in order.items.all %}
-        <div class="flex justify-between text-sm">
-          <span class="text-slate-600">{{ item.quantity }} × {{ item.product_name }}</span>
-          <span class="font-medium">${{ item.line_total }}</span>
-        </div>
-      {% endfor %}
-      <dl class="space-y-2 text-sm border-t border-slate-200 pt-3">
-        <div class="flex justify-between"><dt class="text-slate-500">Subtotal</dt><dd>${{ order.subtotal }}</dd></div>
-        {% if order.discount_total %}<div class="flex justify-between"><dt class="text-slate-500">Discount</dt><dd class="text-green-700">-${{ order.discount_total }}</dd></div>{% endif %}
-        <div class="flex justify-between"><dt class="text-slate-500">Shipping</dt><dd>${{ order.shipping_cost }}</dd></div>
-        <div class="flex justify-between text-base font-bold"><dt>Total</dt><dd>${{ order.total }}</dd></div>
-      </dl>
-    </div>
-    <div class="card p-6">
-      <h2 class="font-bold text-slate-900 mb-2">Shipping address</h2>
-      <p class="text-sm text-slate-600">
-        {{ order.shipping_full_name }}<br>
-        {{ order.shipping_line1 }}{% if order.shipping_line2 %}, {{ order.shipping_line2 }}{% endif %}<br>
-        {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}<br>
-        {{ order.shipping_country }}
-      </p>
-    </div>
+  {% if order.status == 'shipped' or order.status == 'delivered' %}
+  <div class="card-clean p-4 mb-4">
+    <h2 class="h5 mb-3">Tracking</h2>
+    <p class="small mb-1"><strong>Courier:</strong> {{ order.courier_name|default:"-" }}</p>
+    <p class="small mb-1"><strong>AWB:</strong> {{ order.awb_number|default:"-" }}</p>
+    {% if order.tracking_url %}<a href="{{ order.tracking_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-pill mt-2">Track shipment</a>{% endif %}
   </div>
-</section>
+  {% endif %}
+
+  {% if order.status == 'delivered' %}
+  <div class="card-clean p-4">
+    <h2 class="h5 mb-2">Had an issue with this order?</h2>
+    <p class="small text-secondary">{% if order.issue_window_open %}You're within the {{ order.delivered_at|timesince }} reporting window.{% else %}The report window has passed, but you can still let us know.{% endif %}</p>
+    <a href="{% url 'orders:report_issue' order.order_number %}" class="btn btn-outline-dark rounded-pill btn-sm">Report an issue</a>
+  </div>
+  {% endif %}
+</div>
+<div class="col-lg-4">
+  <div class="card-clean p-4 mb-4">
+    <h2 class="h5 mb-3">Shipping address</h2>
+    <p class="small text-secondary mb-0">
+      {{ order.shipping_full_name }}<br>
+      {{ order.shipping_line1 }}{% if order.shipping_line2 %}, {{ order.shipping_line2 }}{% endif %}<br>
+      {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}<br>
+      {{ order.shipping_country }}
+    </p>
+  </div>
+  <div class="card-clean p-4">
+    <h2 class="h5 mb-3">Payment</h2>
+    <p class="small text-secondary mb-1">{{ order.get_payment_method_display }}</p>
+    {% if order.payment_method == 'cod' %}
+      <p class="small">{% if order.cod_confirmed %}<span class="text-success">Confirmed by phone/WhatsApp</span>{% else %}Awaiting phone/WhatsApp confirmation{% endif %}</p>
+    {% endif %}
+    <a href="{% url 'orders:download_invoice' order.order_number %}" class="btn btn-outline-dark rounded-pill btn-sm mt-2">Download GST invoice</a>
+  </div>
+</div>
+</div>
+</div></section>
 {% endblock %}

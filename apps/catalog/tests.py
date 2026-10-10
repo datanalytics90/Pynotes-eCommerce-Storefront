@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 from django.urls import reverse
 
+from apps.catalog.models import BundleItem
 from factories import CategoryFactory, ProductFactory, UserFactory
 
 
@@ -18,13 +19,71 @@ class TestProductModel:
         product = ProductFactory(price=Decimal("80.00"), compare_at_price=Decimal("100.00"))
         assert product.discount_percent == 20
 
-    def test_in_stock_digital_always_true(self):
-        product = ProductFactory(is_digital=True, stock=0)
+    def test_simple_product_in_stock(self):
+        product = ProductFactory(is_bundle=False, stock=5)
         assert product.in_stock is True
+        assert product.available_stock == 5
 
-    def test_in_stock_physical_depends_on_stock(self):
-        product = ProductFactory(is_digital=False, stock=0)
+    def test_simple_product_out_of_stock(self):
+        product = ProductFactory(is_bundle=False, stock=0)
         assert product.in_stock is False
+
+    def test_bundle_stock_derived_from_books(self):
+        book_a = ProductFactory(stock=10)
+        book_b = ProductFactory(stock=3)
+        bundle = ProductFactory(is_bundle=True, stock=999)  # stock field should be ignored
+        BundleItem.objects.create(bundle=bundle, book=book_a, quantity=1)
+        BundleItem.objects.create(bundle=bundle, book=book_b, quantity=1)
+        assert bundle.available_stock == 3  # limited by the scarcer book
+
+    def test_bundle_stock_respects_quantity_per_item(self):
+        book = ProductFactory(stock=10)
+        bundle = ProductFactory(is_bundle=True)
+        BundleItem.objects.create(bundle=bundle, book=book, quantity=2)
+        assert bundle.available_stock == 5
+
+    def test_bundle_with_no_items_has_zero_stock(self):
+        bundle = ProductFactory(is_bundle=True, stock=50)
+        assert bundle.available_stock == 0
+        assert bundle.in_stock is False
+
+    def test_deduct_stock_on_simple_product(self):
+        product = ProductFactory(stock=10)
+        product.deduct_stock(3)
+        product.refresh_from_db()
+        assert product.stock == 7
+
+    def test_deduct_stock_on_bundle_deducts_each_book(self):
+        book_a = ProductFactory(stock=10)
+        book_b = ProductFactory(stock=10)
+        bundle = ProductFactory(is_bundle=True)
+        BundleItem.objects.create(bundle=bundle, book=book_a, quantity=1)
+        BundleItem.objects.create(bundle=bundle, book=book_b, quantity=2)
+        bundle.deduct_stock(1)
+        book_a.refresh_from_db()
+        book_b.refresh_from_db()
+        assert book_a.stock == 9
+        assert book_b.stock == 8
+
+    def test_restock_reverses_deduction(self):
+        product = ProductFactory(stock=10)
+        product.deduct_stock(4)
+        product.restock(4)
+        product.refresh_from_db()
+        assert product.stock == 10
+
+
+@pytest.mark.django_db
+class TestCategoryModel:
+    def test_slug_collision_is_handled(self):
+        c1 = CategoryFactory(name="C", slug="")
+        c2 = CategoryFactory(name="C++", slug="")
+        assert c1.slug != c2.slug
+
+    def test_parent_child_relationship(self):
+        parent = CategoryFactory(name="DSA")
+        child = CategoryFactory(name="DSA with Python", parent=parent)
+        assert child in parent.children.all()
 
 
 @pytest.mark.django_db
@@ -64,6 +123,13 @@ class TestCatalogViews:
         response = client.get(product.get_absolute_url())
         assert response.status_code == 404
 
+    def test_product_detail_shows_bundle_contents(self, client):
+        book = ProductFactory(name="Solo Book")
+        bundle = ProductFactory(name="Combo Bundle", is_bundle=True)
+        BundleItem.objects.create(bundle=bundle, book=book, quantity=1)
+        response = client.get(bundle.get_absolute_url())
+        assert b"Solo Book" in response.content
+
     def test_submit_review_requires_login(self, client):
         product = ProductFactory()
         response = client.post(reverse("catalog:submit_review", kwargs={"slug": product.slug}))
@@ -76,7 +142,7 @@ class TestCatalogViews:
         client.force_login(user)
         response = client.post(
             reverse("catalog:submit_review", kwargs={"slug": product.slug}),
-            {"rating": 5, "title": "Loved it", "body": "Great product overall."},
+            {"rating": 5, "title": "Loved it", "body": "Great book overall."},
         )
         assert response.status_code == 302
         assert product.reviews.filter(user=user, rating=5).exists()

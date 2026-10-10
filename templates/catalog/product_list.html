@@ -1,50 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Shop all products — {{ SITE_NAME }}{% endblock %}
+{% block title %}Shop | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-    <div>
-      <h1 class="text-2xl font-extrabold text-slate-900">
-        {% if query %}Results for "{{ query }}"{% else %}Shop all products{% endif %}
-      </h1>
-      <p class="text-sm text-slate-500 mt-1">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }}</p>
-    </div>
-    <form method="get" class="flex items-center gap-2">
-      {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
-      {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
-      <label class="text-sm text-slate-600">Sort</label>
-      <select name="sort" onchange="this.form.submit()" class="form-input w-auto">
-        <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
-        <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Price: low to high</option>
-        <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Price: high to low</option>
-        <option value="name" {% if sort == "name" %}selected{% endif %}>Name A–Z</option>
-      </select>
-    </form>
-  </div>
-
-  <div class="grid lg:grid-cols-[220px_1fr] gap-8">
-    <aside class="space-y-2">
-      <h2 class="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-2">Categories</h2>
-      <a href="{% url 'catalog:product_list' %}" class="block px-3 py-2 rounded-lg text-sm {% if not current_category %}bg-brand-50 text-brand-700 font-semibold{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-        All products
-      </a>
-      {% for category in categories %}
-        <a href="?category={{ category.slug }}" class="block px-3 py-2 rounded-lg text-sm {% if current_category == category.slug %}bg-brand-50 text-brand-700 font-semibold{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-          {{ category.name }}
-        </a>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Catalogue</div>
+  <h1>Find your next set of notes.</h1>
+  <p class="lead text-secondary" style="max-width:700px">Browse subject books and bundle options.</p>
+</div></section>
+<section class="section pt-4"><div class="container">
+<form method="get" class="row g-3 mb-4">
+  <div class="col-lg-8"><input class="form-control" name="q" value="{{ query }}" placeholder="Search by subject name"></div>
+  <div class="col-lg-4">
+    <select class="form-select" name="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
       {% endfor %}
-    </aside>
-
-    <div>
-      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-        {% for product in page_obj %}
-          {% include "partials/product_card.html" %}
-        {% empty %}
-          <p class="col-span-full text-slate-500 py-12 text-center">No products match your search.</p>
-        {% endfor %}
-      </div>
-      {% include "partials/pagination.html" %}
-    </div>
+    </select>
   </div>
-</section>
+</form>
+<div class="d-flex justify-content-end mb-3">
+  <form method="get" class="d-flex align-items-center gap-2">
+    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+    {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+    <label class="small text-secondary">Sort</label>
+    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
+      <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Price: low to high</option>
+      <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Price: high to low</option>
+      <option value="name" {% if sort == "name" %}selected{% endif %}>Name A-Z</option>
+    </select>
+  </form>
+</div>
+<div class="row g-4">
+  {% for product in page_obj %}
+    <div class="col-md-6 col-lg-4 reveal">{% include "partials/product_card.html" %}</div>
+  {% empty %}
+    <p class="text-secondary text-center py-5">No products match your search.</p>
+  {% endfor %}
+</div>
+{% include "partials/pagination.html" %}
+</div></section>
 {% endblock %}

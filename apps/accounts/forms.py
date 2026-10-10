@@ -4,6 +4,14 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import Address, User
 
 
+def _bootstrapify(fields):
+    for field in fields.values():
+        if isinstance(field.widget, forms.CheckboxInput):
+            field.widget.attrs.setdefault("class", "form-check-input")
+        else:
+            field.widget.attrs.setdefault("class", "form-control")
+
+
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=150, required=True)
     last_name = forms.CharField(max_length=150, required=True)
@@ -15,11 +23,7 @@ class SignUpForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class", "w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-brand-500 "
-                "focus:ring-brand-500 text-sm"
-            )
+        _bootstrapify(self.fields)
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -27,11 +31,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class", "w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-brand-500 "
-                "focus:ring-brand-500 text-sm"
-            )
+        _bootstrapify(self.fields)
 
 
 class ProfileForm(forms.ModelForm):
@@ -39,9 +39,10 @@ class ProfileForm(forms.ModelForm):
         model = User
         fields = ["first_name", "last_name", "phone_number", "newsletter_opt_in"]
         widgets = {
-            "first_name": forms.TextInput(attrs={"class": "form-input"}),
-            "last_name": forms.TextInput(attrs={"class": "form-input"}),
-            "phone_number": forms.TextInput(attrs={"class": "form-input"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control"}),
+            "newsletter_opt_in": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
 
@@ -53,6 +54,10 @@ class AddressForm(forms.ModelForm):
             "state", "postal_code", "country", "phone_number", "is_default",
         ]
         widgets = {
-            field: forms.TextInput(attrs={"class": "form-input"})
-            for field in ["full_name", "line1", "line2", "city", "state", "postal_code", "country", "phone_number"]
+            **{
+                field: forms.TextInput(attrs={"class": "form-control"})
+                for field in ["full_name", "line1", "line2", "city", "state", "postal_code", "country", "phone_number"]
+            },
+            "address_type": forms.Select(attrs={"class": "form-select"}),
+            "is_default": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

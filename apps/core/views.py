@@ -1,22 +1,29 @@
 from django.contrib import messages
+from django.http import Http404
 from django.shortcuts import redirect, render
 
-from apps.catalog.models import Category, Product
+from apps.catalog.models import Product
 
 from .forms import ContactForm
+from .models import FAQ, LegalPage, Testimonial
 
 
 def home(request):
-    featured_products = Product.objects.filter(is_active=True, is_featured=True).select_related("category")[:8]
-    new_arrivals = Product.objects.filter(is_active=True).select_related("category").order_by("-created_at")[:8]
-    categories = Category.objects.filter(is_active=True)[:6]
+    featured_products = (
+        Product.objects.filter(is_active=True, is_featured=True, is_bundle=False)
+        .select_related("category")[:8]
+    )
+    bundles = Product.objects.filter(is_active=True, is_bundle=True).order_by("price")[:5]
+    book_count = Product.objects.filter(is_active=True, is_bundle=False).count()
+    testimonials = Testimonial.objects.filter(is_active=True)[:3]
     return render(
         request,
         "core/home.html",
         {
             "featured_products": featured_products,
-            "new_arrivals": new_arrivals,
-            "categories": categories,
+            "bundles": bundles,
+            "book_count": book_count,
+            "testimonials": testimonials,
         },
     )
 
@@ -35,3 +42,19 @@ def contact(request):
     else:
         form = ContactForm()
     return render(request, "core/contact.html", {"form": form})
+
+
+def faq(request):
+    faqs = FAQ.objects.filter(is_active=True)
+    groups = {}
+    for item in faqs:
+        groups.setdefault(item.get_group_display(), []).append(item)
+    return render(request, "core/faq.html", {"groups": groups})
+
+
+def legal_page(request, slug):
+    try:
+        page = LegalPage.objects.get(slug=slug)
+    except LegalPage.DoesNotExist:
+        raise Http404
+    return render(request, "core/legal_page.html", {"page": page})

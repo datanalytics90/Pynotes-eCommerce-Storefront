@@ -12,6 +12,9 @@ class Category(models.Model):
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="categories/", blank=True, null=True)
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    )
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
 
@@ -24,7 +27,13 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name) or "category"
+            slug = base_slug
+            counter = 1
+            while Category.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -32,6 +41,15 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """A printed subject book, or a Smart Bundle of several books.
+
+    Bundles are themselves Product rows (is_bundle=True) linked to their
+    component books through BundleItem. A bundle's own `stock` field is not
+    used for availability — its stock is always derived live from the books
+    inside it, matching the reference store's "bundle stock follows the
+    books" rule.
+    """
+
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="products")
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
@@ -40,8 +58,13 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))])
     compare_at_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     sku = models.CharField(max_length=50, unique=True)
-    stock = models.PositiveIntegerField(default=0)
-    is_digital = models.BooleanField(default=False)
+    stock = models.PositiveIntegerField(
+        default=0, help_text="Ignored for bundles — bundle stock is computed from its books."
+    )
+    hsn_code = models.CharField(
+        max_length=10, blank=True, default="4901", help_text="HSN code for the GST invoice (printed books: 4901)."
+    )
+    is_bundle = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     weight_kg = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal("0.00"))
@@ -70,8 +93,18 @@ class Product(models.Model):
         return reverse("catalog:product_detail", kwargs={"slug": self.slug})
 
     @property
+    def available_stock(self):
+        """Live stock: derived from component books for a bundle, else the stored value."""
+        if not self.is_bundle:
+            return self.stock
+        items = list(self.bundle_items.select_related("book"))
+        if not items:
+            return 0
+        return min(item.book.available_stock // item.quantity for item in items)
+
+    @property
     def in_stock(self):
-        return self.is_digital or self.stock > 0
+        return self.available_stock > 0
 
     @property
     def discount_percent(self):
@@ -87,6 +120,41 @@ class Product(models.Model):
     @property
     def review_count(self):
         return self.reviews.filter(is_approved=True).count()
+
+    def deduct_stock(self, quantity):
+        """Deduct stock for an order of `quantity` units of this product."""
+        if self.is_bundle:
+            for item in self.bundle_items.select_related("book"):
+                book = item.book
+                book.stock = max(book.stock - item.quantity * quantity, 0)
+                book.save(update_fields=["stock"])
+        else:
+            self.stock = max(self.stock - quantity, 0)
+            self.save(update_fields=["stock"])
+
+    def restock(self, quantity):
+        """Reverse of deduct_stock, used when an order is cancelled/refunded."""
+        if self.is_bundle:
+            for item in self.bundle_items.select_related("book"):
+                book = item.book
+                book.stock = book.stock + item.quantity * quantity
+                book.save(update_fields=["stock"])
+        else:
+            self.stock = self.stock + quantity
+            self.save(update_fields=["stock"])
+
+
+class BundleItem(models.Model):
+    bundle = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="bundle_items")
+    book = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="in_bundles")
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ("bundle", "book")
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.bundle.name} <- {self.quantity} x {self.book.name}"
 
 
 class ProductImage(models.Model):

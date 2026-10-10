@@ -18,7 +18,7 @@ class SignUpView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)
-        messages.success(self.request, "Welcome to Pynotes Store! Your account has been created.")
+        messages.success(self.request, "Welcome to PyNotes! Your account has been created.")
         return response
 
 
@@ -33,23 +33,28 @@ class EmailLogoutView(LogoutView):
 
 
 @login_required
-def profile(request):
+def dashboard(request):
+    orders = request.user.orders.all()[:5]
+    addresses = request.user.addresses.all()
+    return render(request, "account/dashboard.html", {"orders": orders, "addresses": addresses})
+
+
+@login_required
+def account_details(request):
     if request.method == "POST":
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Profile updated.")
-            return redirect("accounts:profile")
+            messages.success(request, "Account details updated.")
+            return redirect("accounts:account_details")
     else:
         form = ProfileForm(instance=request.user)
+    return render(request, "account/account_details.html", {"form": form})
 
-    addresses = request.user.addresses.all()
-    orders = request.user.orders.all()[:10]
-    return render(
-        request,
-        "accounts/profile.html",
-        {"form": form, "addresses": addresses, "orders": orders},
-    )
+
+@login_required
+def addresses(request):
+    return render(request, "account/addresses.html", {"addresses": request.user.addresses.all()})
 
 
 @login_required
@@ -61,7 +66,7 @@ def address_create(request):
             address.user = request.user
             address.save()
             messages.success(request, "Address saved.")
-            return redirect("accounts:profile")
+            return redirect("accounts:addresses")
     else:
         form = AddressForm()
     return render(request, "accounts/address_form.html", {"form": form})
@@ -75,7 +80,7 @@ def address_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Address updated.")
-            return redirect("accounts:profile")
+            return redirect("accounts:addresses")
     else:
         form = AddressForm(instance=address)
     return render(request, "accounts/address_form.html", {"form": form, "address": address})
@@ -87,4 +92,4 @@ def address_delete(request, pk):
     if request.method == "POST":
         address.delete()
         messages.success(request, "Address removed.")
-    return redirect("accounts:profile")
+    return redirect("accounts:addresses")

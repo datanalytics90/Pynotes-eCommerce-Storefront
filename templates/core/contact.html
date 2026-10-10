@@ -1,19 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Contact us — {{ SITE_NAME }}{% endblock %}
+{% block title %}Contact | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-<section class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8 py-16">
-  <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Contact us</h1>
-  <p class="text-slate-600 mb-8">Questions about an order, a product, or a bulk/team license? Send us a note.</p>
-  <form method="post" class="card p-6 space-y-4">
-    {% csrf_token %}
-    {% for field in form %}
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}<p class="text-sm text-red-600 mt-1">{{ field.errors.0 }}</p>{% endif %}
-      </div>
-    {% endfor %}
-    <button type="submit" class="btn-primary w-full">Send message</button>
-  </form>
-</section>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Get in touch</div>
+  <h1>Questions about an order?</h1>
+  <p class="text-secondary" style="max-width:700px">Send us a note and we'll reply within one business day.{% if site_settings.whatsapp_number %} You can also WhatsApp us at {{ site_settings.whatsapp_number }}.{% endif %}</p>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row justify-content-center"><div class="col-lg-7">
+<form method="post" class="card-clean p-4">
+  {% csrf_token %}
+  <div class="row g-3">
+  {% for field in form %}
+    <div class="col-12">
+      <label class="form-label">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<p class="text-danger small mt-1">{{ field.errors.0 }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  </div>
+  <button type="submit" class="btn btn-brand w-100 mt-4">Send message</button>
+</form>
+</div></div>
+</div></section>
 {% endblock %}

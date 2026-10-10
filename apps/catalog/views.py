@@ -58,13 +58,22 @@ def category_detail(request, slug):
 
 def product_detail(request, slug):
     product = get_object_or_404(
-        Product.objects.select_related("category").prefetch_related("images", "reviews__user"),
+        Product.objects.select_related("category").prefetch_related(
+            "images", "reviews__user", "bundle_items__book__images"
+        ),
         slug=slug,
         is_active=True,
     )
     related_products = (
         Product.objects.filter(category=product.category, is_active=True).exclude(pk=product.pk)[:4]
     )
+    bundles_containing = []
+    if not product.is_bundle:
+        bundles_containing = (
+            Product.objects.filter(is_active=True, is_bundle=True, bundle_items__book=product)
+            .distinct()
+            .order_by("price")
+        )
     review_form = ReviewForm()
     user_has_reviewed = (
         request.user.is_authenticated and product.reviews.filter(user=request.user).exists()
@@ -75,6 +84,7 @@ def product_detail(request, slug):
         {
             "product": product,
             "related_products": related_products,
+            "bundles_containing": bundles_containing,
             "review_form": review_form,
             "user_has_reviewed": user_has_reviewed,
         },

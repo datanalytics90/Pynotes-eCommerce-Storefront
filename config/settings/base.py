@@ -103,6 +103,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_ID = 1
 
+from django.contrib.messages import constants as message_constants  # noqa: E402
+
+MESSAGE_TAGS = {
+    message_constants.ERROR: "danger",
+}
+
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "core:home"
 LOGOUT_REDIRECT_URL = "core:home"
@@ -128,13 +134,11 @@ EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="Pynotes Store <no-reply@pynotes.store>")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="PyNotes <no-reply@pynotes.store>")
 
-# --- Stripe ---
-STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY", default="")
-STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
-STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
-CURRENCY = config("CURRENCY", default="usd")
+# --- Razorpay (prepaid payments) ---
+RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID", default="")
+RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET", default="")
 
-SITE_NAME = config("SITE_NAME", default="Pynotes Store")
+SITE_NAME = config("SITE_NAME", default="PyNotes")
 SITE_DOMAIN = config("SITE_DOMAIN", default="localhost:8000")

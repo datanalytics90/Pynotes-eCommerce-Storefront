@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Policy</div>
+  <h1>{{ page.title }}</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row justify-content-center"><div class="col-lg-8">
+  {{ page.body|linebreaks }}
+  <p class="text-secondary small mt-5">Last updated {{ page.updated_at|date:"M d, Y" }}</p>
+</div></div>
+</div></section>
+{% endblock %}

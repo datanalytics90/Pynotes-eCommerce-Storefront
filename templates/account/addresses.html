@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Addresses | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">My account</div>
+  <h1>Addresses.</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row g-4">
+<div class="col-lg-3">{% include "partials/account_nav.html" with active="addresses" %}</div>
+<div class="col-lg-9">
+  <div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'accounts:address_create' %}" class="btn btn-brand btn-sm">+ Add new address</a>
+  </div>
+  <div class="row g-3">
+  {% for address in addresses %}
+    <div class="col-md-6">
+      <div class="card-clean p-3">
+        <p class="fw-bold mb-1">{{ address.full_name }} {% if address.is_default %}<span class="badge rounded-pill text-bg-light">Default</span>{% endif %}</p>
+        <p class="small text-secondary mb-2">{{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}<br>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+        <div class="d-flex gap-3">
+          <a href="{% url 'accounts:address_edit' address.pk %}" class="small">Edit</a>
+          <form method="post" action="{% url 'accounts:address_delete' address.pk %}">{% csrf_token %}<button type="submit" class="btn btn-sm p-0 border-0 bg-transparent text-danger small">Delete</button></form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-secondary">No addresses saved yet.</p>
+  {% endfor %}
+  </div>
+</div>
+</div>
+</div></section>
+{% endblock %}

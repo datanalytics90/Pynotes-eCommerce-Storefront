@@ -1,0 +1,216 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,900;1,900&display=swap');
+
+:root{
+  --navy:#0B3561; --teal:#12A5B0; --ink:#071E38; --mint:#DDF3F4;
+  --paper:#F7FAFC; --yellow:#FFD54A; --white:#fff; --border:#dbe5ec;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;color:var(--ink);background:var(--paper);line-height:1.65}
+h1,h2,h3,h4,h5{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);line-height:1.15}
+.display-brand{font-family:'Nunito',sans-serif;font-weight:900;font-style:italic}
+.nav-label,.eyebrow,.btn,.form-label{font-family:'Montserrat',sans-serif}
+.eyebrow{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.announcement{background:var(--navy);color:#fff;font-size:.9rem;min-height:38px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.announcement span{display:inline-block;animation:announcement 10s infinite}
+@keyframes announcement{0%,25%{transform:translateY(0);opacity:1}30%,55%{transform:translateY(-32px);opacity:0}60%,85%{transform:translateY(0);opacity:1}90%,100%{transform:translateY(-32px);opacity:0}}
+.site-header{position:sticky;top:0;z-index:1000;background:rgba(247,250,252,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(11,53,97,.08)}
+.navbar-brand img{width:175px;height:auto;object-fit:contain}
+.navbar .nav-link{font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;color:var(--navy)!important;text-transform:uppercase;letter-spacing:.04em}
+.navbar .nav-link:hover{color:var(--teal)!important}
+.btn-brand{background:var(--navy);border:2px solid var(--navy);color:#fff;border-radius:999px;padding:.75rem 1.35rem;font-weight:800}
+.btn-brand:hover{background:var(--teal);border-color:var(--teal);color:#fff;transform:translateY(-2px)}
+.btn-teal{background:var(--teal);border:2px solid var(--teal);color:var(--ink);border-radius:999px;padding:.75rem 1.35rem;font-weight:800}
+.btn-teal:hover{background:var(--navy);border-color:var(--navy);color:#fff}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy),#104a80);color:#fff;padding:90px 0 75px}
+.hero h1{font-size:clamp(2.7rem,6vw,5rem);color:#fff}
+.hero p{font-size:1.12rem;max-width:620px;color:#e7f6f7}
+.hero:after{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:rgba(18,165,176,.14);right:-160px;top:-160px}
+.hero-book{position:relative;z-index:1;max-width:390px;margin:auto;animation:float 5s ease-in-out infinite}
+.book-mock{aspect-ratio:4/5;max-width:330px;margin:auto;border-radius:18px 12px 12px 18px;background:linear-gradient(145deg,#fff,#dff2f4);box-shadow:22px 24px 0 rgba(18,165,176,.28),0 30px 60px rgba(0,0,0,.22);padding:28px;transform:rotate(2deg);position:relative;overflow:hidden}
+.book-mock:before{content:"</>";position:absolute;right:-12px;top:15px;font:900 6rem/1 'Nunito';color:rgba(18,165,176,.1)}
+.book-mock .book-title{font:900 2.4rem/1.05 'Nunito';font-style:italic;color:var(--navy);margin-top:30%}
+.book-mock .book-code{margin-top:30px;background:var(--navy);color:#fff;border-radius:12px;padding:15px;font-family:monospace;font-size:.78rem}
+@keyframes float{50%{transform:translateY(-12px) rotate(-1deg)}}
+.section{padding:90px 0}
+.section-soft{background:var(--mint)}
+.section-dark{background:var(--navy);color:#fff}
+.section-dark h2,.section-dark h3{color:#fff}
+.card-clean{border:1px solid var(--border);border-radius:22px;background:#fff;box-shadow:0 10px 35px rgba(7,30,56,.06);overflow:hidden;height:100%;transition:.35s}
+.card-clean:hover{transform:translateY(-7px);box-shadow:0 20px 45px rgba(7,30,56,.12)}
+.product-cover{height:280px;background:linear-gradient(145deg,#e7f6f7,#fff);display:flex;align-items:center;justify-content:center;padding:25px;position:relative}
+.product-cover .mini-book{width:175px;height:225px;border-radius:10px 7px 7px 10px;background:#fff;box-shadow:12px 12px 0 rgba(18,165,176,.25),0 15px 25px rgba(11,53,97,.18);padding:20px;transform:rotate(-3deg)}
+.mini-book strong{display:block;font:900 1.5rem/1 'Nunito';font-style:italic;color:var(--navy);margin-top:50%}
+.mini-book small{display:block;margin-top:12px;font-family:monospace;color:var(--teal)}
+.sale-badge{position:absolute;top:18px;left:18px;background:var(--yellow);color:var(--ink);font:700 .7rem 'Montserrat';padding:7px 10px;border-radius:999px}
+.price{font-size:1.5rem;font-weight:900;color:var(--navy)}
+.old-price{text-decoration:line-through;color:#8796a5;font-size:.95rem}
+.trust-card{padding:28px;border-radius:18px;background:#fff;border:1px solid rgba(11,53,97,.08);height:100%}
+.icon-circle{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--teal);font-weight:900;font-size:1.25rem}
+.feature-line{border-top:1px solid rgba(11,53,97,.1);padding:18px 0}
+.stats-number{font:900 2.6rem 'Nunito';font-style:italic;color:var(--teal)}
+.page-hero{padding:70px 0;background:linear-gradient(180deg,var(--mint),var(--paper))}
+.page-hero h1{font-size:clamp(2.5rem,5vw,4rem)}
+.table-brand{background:#fff;border-radius:18px;overflow:hidden;border:1px solid var(--border)}
+.table-brand th{background:var(--navy);color:#fff;font-family:'Montserrat',sans-serif;font-size:.78rem;text-transform:uppercase}
+.accordion-button{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--navy)}
+.accordion-button:not(.collapsed){background:var(--mint);color:var(--navy);box-shadow:none}
+.form-control,.form-select{border-radius:12px;padding:.8rem 1rem;border-color:#cbd9e4}
+.form-control:focus,.form-select:focus{border-color:var(--teal);box-shadow:0 0 0 .2rem rgba(18,165,176,.15)}
+.footer{background:var(--ink);color:#dce7ef;padding:65px 0 25px}
+.footer h5{color:#fff;font-size:1rem}
+.footer a{color:#c9d7e3;text-decoration:none}
+.footer a:hover{color:#5bd1d9}
+.footer-logo{width:185px;filter:brightness(0) invert(1);opacity:.95}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:40px;padding-top:20px;font-size:.85rem}
+.reveal{opacity:0;transform:translateY(25px);transition:opacity .7s ease,transform .7s ease}
+.reveal.show{opacity:1;transform:none}
+.pulse-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);display:inline-block;box-shadow:0 0 0 0 rgba(18,165,176,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(18,165,176,0)}100%{box-shadow:0 0 0 0 rgba(18,165,176,0)}}
+.cart-drawer{position:fixed;right:-430px;top:0;width:min(430px,100%);height:100%;background:#fff;z-index:2000;box-shadow:-20px 0 60px rgba(7,30,56,.18);transition:.4s;padding:28px;overflow:auto}
+.cart-drawer.open{right:0}
+.cart-backdrop{position:fixed;inset:0;background:rgba(7,30,56,.45);z-index:1999;display:none}
+.cart-backdrop.show{display:block}
+.qty{width:42px;text-align:center;border:1px solid var(--border);border-radius:9px}
+@media(max-width:991px){.navbar-brand img{width:145px}.hero{padding:65px 0}.section{padding:65px 0}}
+@media(max-width:575px){.hero h1{font-size:2.6rem}.navbar-brand img{width:125px}.product-cover{height:245px}}
+
+
+/* =========================
+   PyNotes Motion System
+   ========================= */
+:root{
+  --motion-fast:.22s;
+  --motion-base:.45s;
+  --motion-slow:.8s;
+  --ease-smooth:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.16,1,.3,1);
+}
+
+/* Smooth page entrance */
+body{animation:pageEnter .65s var(--ease-smooth) both}
+@keyframes pageEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Header micro interaction */
+.site-header{transition:background .35s ease,box-shadow .35s ease,transform .35s ease}
+.site-header.scrolled{background:rgba(247,250,252,.97);box-shadow:0 8px 30px rgba(7,30,56,.08)}
+.navbar .nav-link{position:relative;transition:color var(--motion-fast) ease}
+.navbar .nav-link:after{content:"";position:absolute;left:.75rem;right:.75rem;bottom:.15rem;height:2px;border-radius:99px;background:var(--teal);transform:scaleX(0);transform-origin:center;transition:transform .3s var(--ease-smooth)}
+.navbar .nav-link:hover:after,.navbar .nav-link.active:after{transform:scaleX(1)}
+
+/* Hero ambient movement */
+.hero{isolation:isolate}
+.hero:before{
+  content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(255,255,255,.16);
+  border-radius:50%;left:-70px;bottom:-90px;animation:orbitFloat 12s ease-in-out infinite
+}
+.hero:after{animation:heroGlow 9s ease-in-out infinite}
+@keyframes heroGlow{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.14);opacity:1}}
+@keyframes orbitFloat{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(45px,-25px) rotate(25deg)}}
+
+/* Floating book has a gentle 3D tilt */
+.hero-book{transform-style:preserve-3d;animation:bookFloat 6s ease-in-out infinite}
+.hero-book:hover{animation-play-state:paused}
+@keyframes bookFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(1deg)}
+  50%{transform:translate3d(0,-14px,0) rotate(-2deg)}
+}
+.book-mock{transition:transform .6s var(--ease-smooth),box-shadow .6s var(--ease-smooth)}
+.hero-book:hover .book-mock{transform:rotate(-1deg) rotateY(-5deg) translateY(-4px);box-shadow:28px 30px 0 rgba(18,165,176,.3),0 40px 70px rgba(0,0,0,.25)}
+.book-mock:after{
+  content:"";position:absolute;inset:-30% -70%;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);
+  transform:translateX(-60%) rotate(8deg);animation:bookShine 5.5s ease-in-out infinite;
+}
+@keyframes bookShine{0%,55%{transform:translateX(-65%) rotate(8deg)}75%,100%{transform:translateX(65%) rotate(8deg)}}
+
+/* Buttons get a subtle lift and shine */
+.btn-brand,.btn-teal{position:relative;overflow:hidden;transition:transform var(--motion-fast) var(--ease-smooth),box-shadow var(--motion-fast) ease,background var(--motion-fast) ease}
+.btn-brand:before,.btn-teal:before{
+  content:"";position:absolute;top:0;left:-120%;width:70%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:skewX(-20deg);transition:left .65s var(--ease-smooth)
+}
+.btn-brand:hover,.btn-teal:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(7,30,56,.15)}
+.btn-brand:hover:before,.btn-teal:hover:before{left:140%}
+.btn-brand:active,.btn-teal:active{transform:translateY(0) scale(.98)}
+
+/* Cards use a restrained lift, not a heavy effect */
+.card-clean,.trust-card{will-change:transform;transition:transform .5s var(--ease-smooth),box-shadow .5s var(--ease-smooth),border-color .35s ease}
+.card-clean:hover,.trust-card:hover{transform:translateY(-9px);box-shadow:0 24px 55px rgba(7,30,56,.13);border-color:rgba(18,165,176,.3)}
+.product-cover{transition:background .45s ease}
+.card-clean:hover .product-cover{background:linear-gradient(145deg,#d8f1f3,#fff)}
+.mini-book{transition:transform .55s var(--ease-smooth),box-shadow .55s var(--ease-smooth)}
+.card-clean:hover .mini-book{transform:translateY(-8px) rotate(2deg);box-shadow:16px 17px 0 rgba(18,165,176,.28),0 20px 30px rgba(11,53,97,.2)}
+
+/* Sale badge pulse */
+.sale-badge{animation:salePulse 2.8s ease-in-out infinite}
+@keyframes salePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* Reveal animation: slightly more premium */
+.reveal{opacity:0;transform:translateY(34px) scale(.985);transition:opacity .8s var(--ease-soft),transform .8s var(--ease-soft)}
+.reveal.show{opacity:1;transform:none}
+.reveal:nth-child(2){transition-delay:.08s}
+.reveal:nth-child(3){transition-delay:.16s}
+.reveal:nth-child(4){transition-delay:.24s}
+
+/* Section headings draw attention with a tiny underline */
+.eyebrow{position:relative;display:inline-block}
+.eyebrow:after{content:"";display:block;width:0;height:2px;margin-top:5px;border-radius:9px;background:var(--teal);transition:width .6s var(--ease-smooth)}
+.reveal.show .eyebrow:after,.eyebrow:hover:after{width:100%}
+
+/* Stats count visual emphasis */
+.stats-number{display:inline-block;animation:statsBreathe 3.5s ease-in-out infinite}
+@keyframes statsBreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* Trust icons */
+.icon-circle{transition:transform .4s var(--ease-smooth),background .3s ease,box-shadow .3s ease}
+.trust-card:hover .icon-circle{transform:rotate(-7deg) scale(1.1);background:#c9ecee;box-shadow:0 8px 20px rgba(18,165,176,.18)}
+
+/* Accordion opening is smoother */
+.accordion-item{transition:transform .3s var(--ease-smooth),box-shadow .3s ease}
+.accordion-item:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(7,30,56,.06)}
+.accordion-button{transition:background .3s ease,color .3s ease}
+
+/* Product gallery shimmer */
+.product-cover:has(.mini-book){overflow:hidden}
+.product-cover:has(.mini-book):after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);
+  transform:translateX(-120%);opacity:0;
+}
+.card-clean:hover .product-cover:after,.product-cover:hover:after{opacity:1;animation:galleryShine 1s var(--ease-smooth) forwards}
+@keyframes galleryShine{to{transform:translateX(120%)}}
+
+/* Cart drawer entrance */
+.cart-drawer{transition:right .5s var(--ease-smooth);will-change:right}
+.cart-backdrop{transition:opacity .35s ease;opacity:0}
+.cart-backdrop.show{opacity:1}
+.cart-drawer.open .cart-drawer-item{animation:cartItemIn .45s var(--ease-smooth) both}
+@keyframes cartItemIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+/* Form focus animation */
+.form-control,.form-select{transition:border-color .25s ease,box-shadow .25s ease,transform .25s var(--ease-smooth)}
+.form-control:focus,.form-select:focus{transform:translateY(-1px)}
+
+/* Pulse dot */
+.pulse-dot{animation:pulse 2s infinite, dotFloat 3s ease-in-out infinite}
+@keyframes dotFloat{50%{transform:translateY(-2px)}}
+
+/* Footer links */
+.footer a{position:relative;transition:color .25s ease}
+.footer a:after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;background:#5bd1d9;transition:width .3s var(--ease-smooth)}
+.footer a:hover:after{width:100%}
+
+/* Mobile menu */
+.navbar-collapse{transition:max-height .45s var(--ease-smooth),opacity .35s ease}
+.navbar-toggler{transition:transform .3s var(--ease-smooth)}
+.navbar-toggler[aria-expanded="true"]{transform:rotate(90deg)}
+
+/* Respect accessibility preferences */
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    scroll-behavior:auto!important;transition-duration:.01ms!important
+  }
+}

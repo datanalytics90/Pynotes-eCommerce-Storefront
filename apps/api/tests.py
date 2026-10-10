@@ -30,6 +30,14 @@ class TestProductApi:
         response = api_client.get(reverse("api:product-detail", kwargs={"slug": product.slug}))
         assert response.status_code == status.HTTP_200_OK
         assert response.data["description"] == product.description
+        assert response.data["hsn_code"] == "4901"
+
+    def test_filter_by_is_bundle(self, api_client):
+        ProductFactory(name="Solo Book", is_bundle=False)
+        ProductFactory(name="Combo Bundle", is_bundle=True)
+        response = api_client.get(reverse("api:product-list"), {"is_bundle": True})
+        names = [p["name"] for p in response.data["results"]]
+        assert names == ["Combo Bundle"]
 
 
 @pytest.mark.django_db

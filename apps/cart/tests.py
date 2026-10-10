@@ -57,7 +57,7 @@ class TestCartViews:
         assert b"2" in cart_response.content
 
     def test_add_out_of_stock_product_shows_error(self, client):
-        product = ProductFactory(stock=0, is_digital=False)
+        product = ProductFactory(stock=0)
         response = client.post(
             reverse("cart:add_to_cart", kwargs={"slug": product.slug}), {"quantity": 1}, follow=True
         )
@@ -81,3 +81,11 @@ class TestCartViews:
         response = client.post(reverse("cart:apply_coupon"), {"code": "SAVE20"}, follow=True)
         messages = list(response.context["messages"])
         assert any("applied" in str(m) for m in messages)
+
+    def test_buy_now_adds_item_and_redirects_to_checkout(self, client):
+        product = ProductFactory(stock=5)
+        response = client.post(reverse("cart:buy_now", kwargs={"slug": product.slug}), {"quantity": 1})
+        assert response.status_code == 302
+        assert response.url == reverse("orders:checkout")
+        cart_response = client.get(reverse("cart:cart_detail"))
+        assert product.name.encode() in cart_response.content

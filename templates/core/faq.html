@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}FAQ | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Help center</div>
+  <h1>Frequently asked questions.</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row justify-content-center"><div class="col-lg-8">
+{% if groups %}
+  {% for group_name, items in groups.items %}
+    <h2 class="h5 mb-3 mt-4">{{ group_name }}</h2>
+    <div class="accordion mb-4" id="accordion-{{ forloop.counter }}">
+      {% for item in items %}
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq-{{ item.id }}">
+            {{ item.question }}
+          </button>
+        </h3>
+        <div id="faq-{{ item.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#accordion-{{ forloop.counter }}">
+          <div class="accordion-body text-secondary">{{ item.answer|linebreaks }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-secondary">FAQs will appear here once added from the admin.</p>
+{% endif %}
+</div></div>
+</div></section>
+{% endblock %}

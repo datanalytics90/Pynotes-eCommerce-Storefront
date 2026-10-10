@@ -61,20 +61,30 @@ class TestAuthViews:
         assert response.status_code == 200
         assert not response.wsgi_request.user.is_authenticated
 
-    def test_profile_requires_login(self, client):
-        response = client.get(reverse("accounts:profile"))
+    def test_account_details_requires_login(self, client):
+        response = client.get(reverse("accounts:account_details"))
         assert response.status_code == 302
 
-    def test_profile_update(self, client):
+    def test_account_details_update(self, client):
         user = UserFactory()
         client.force_login(user)
         response = client.post(
-            reverse("accounts:profile"),
+            reverse("accounts:account_details"),
             {"first_name": "Updated", "last_name": "Name", "phone_number": "", "newsletter_opt_in": ""},
         )
         assert response.status_code == 302
         user.refresh_from_db()
         assert user.first_name == "Updated"
+
+    def test_dashboard_requires_login(self, client):
+        response = client.get(reverse("accounts:dashboard"))
+        assert response.status_code == 302
+
+    def test_dashboard_shows_recent_orders(self, client):
+        user = UserFactory()
+        client.force_login(user)
+        response = client.get(reverse("accounts:dashboard"))
+        assert response.status_code == 200
 
     def test_address_create(self, client):
         user = UserFactory()

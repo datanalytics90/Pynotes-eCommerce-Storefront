@@ -1,3 +1,9 @@
-<div class="bg-slate-900 text-slate-100 text-center text-xs sm:text-sm py-2 px-4">
-  Free shipping on physical orders over $50 · Instant delivery on all digital products
+<div class="announcement">
+  {% if announcement_messages %}
+    {% for m in announcement_messages %}
+      <span data-announcement {% if not forloop.first %}style="display:none"{% endif %}>{{ m.text }}</span>
+    {% endfor %}
+  {% else %}
+    <span>Printed coding notes made to learn, write and grow &middot; Shop PyNotes</span>
+  {% endif %}
 </div>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Account details | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">My account</div>
+  <h1>Account details.</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row g-4">
+<div class="col-lg-3">{% include "partials/account_nav.html" with active="details" %}</div>
+<div class="col-lg-9">
+  <form method="post" class="card-clean p-4">
+    {% csrf_token %}
+    <div class="row g-3">
+    {% for field in form %}
+      <div class="col-md-6 {% if field.field.widget.input_type == 'checkbox' %}form-check mt-4{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          {{ field }}<label class="form-check-label ms-1">{{ field.label }}</label>
+        {% else %}
+          <label class="form-label">{{ field.label }}</label>{{ field }}
+        {% endif %}
+      </div>
+    {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-brand mt-4">Save changes</button>
+  </form>
+  <p class="small text-secondary mt-3">Email: {{ user.email }} &middot; <a href="{% url 'accounts:password_reset' %}">Change password</a></p>
+</div>
+</div>
+</div></section>
+{% endblock %}

@@ -1,100 +1,97 @@
 {% extends "base.html" %}
-{% load static %}
+{% block title %}Home | {{ SITE_NAME }}{% endblock %}
 {% block content %}
-
-<section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-slate-900 text-white">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28 grid lg:grid-cols-2 gap-10 items-center">
-    <div>
-      <span class="badge bg-white/10 text-brand-100 mb-4">New: Python 2026 Bootcamp bundle</span>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-        Learn Python. Ship projects. <span class="text-accent-500">Look the part.</span>
-      </h1>
-      <p class="mt-5 text-lg text-brand-100 max-w-xl">
-        Ebooks, notebooks, video courses and dev merch for people who build with Python and data —
-        curated by {{ SITE_NAME }}.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="{% url 'catalog:product_list' %}" class="btn-accent text-base px-6 py-3">Shop all products</a>
-        <a href="{% url 'core:about' %}" class="btn bg-white/10 text-white hover:bg-white/20 text-base px-6 py-3">Our story</a>
-      </div>
-    </div>
-    <div class="hidden lg:grid grid-cols-2 gap-4">
-      {% for product in new_arrivals|slice:":4" %}
-        <div class="rounded-xl bg-white/10 backdrop-blur p-4">
-          {% with image=product.images.first %}
-            {% if image %}
-              <img src="{{ image.image.url }}" class="rounded-lg h-28 w-full object-cover" alt="{{ product.name }}">
-            {% endif %}
-          {% endwith %}
-          <p class="mt-2 text-sm font-semibold truncate">{{ product.name }}</p>
-          <p class="text-accent-500 font-bold">${{ product.price }}</p>
-        </div>
-      {% endfor %}
-    </div>
+<section class="hero">
+<div class="container"><div class="row align-items-center g-5">
+<div class="col-lg-7 reveal">
+  <div class="eyebrow text-white mb-3">Printed coding notes</div>
+  <h1>Code, written the way you learn it.</h1>
+  <p class="mt-4">{{ SITE_NAME }} makes printed, handwritten-style coding notes for learners. Clear explanations, useful diagrams and a desk-friendly way to study.</p>
+  <div class="d-flex flex-wrap gap-3 mt-4">
+    <a href="{% url 'catalog:product_list' %}" class="btn btn-teal">Explore the Notes</a>
+    <a href="#why" class="btn btn-outline-light rounded-pill px-4">Why {{ SITE_NAME }}?</a>
   </div>
+  <div class="mt-4 small"><span class="pulse-dot me-2"></span>Printed books &middot; India &middot; INR pricing</div>
+</div>
+<div class="col-lg-5 reveal">
+  <div class="hero-book"><div class="book-mock">
+    <div class="eyebrow">{{ SITE_NAME }}</div>
+    <div class="book-title">Learn<br>Python<br>the human way.</div>
+    <div class="book-code">print("keep learning")<br>for skill in practice:<br>&nbsp;&nbsp;skill.grow()</div>
+  </div></div>
+</div>
+</div></div>
 </section>
 
-<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-  <h2 class="text-2xl font-bold text-slate-900 mb-6">Shop by category</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-    {% for category in categories %}
-      <a href="{{ category.get_absolute_url }}" class="card p-4 text-center hover:border-brand-400 hover:shadow-md transition">
-        <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 font-bold">
-          {{ category.name|first }}
-        </div>
-        <p class="text-sm font-semibold text-slate-800">{{ category.name }}</p>
-      </a>
-    {% empty %}
-      <p class="text-slate-500 col-span-full">Categories will show up here once products are added.</p>
-    {% endfor %}
-  </div>
-</section>
+<section class="section py-4 border-bottom"><div class="container"><div class="row g-3 text-center">
+<div class="col-6 col-lg-3"><strong>Printed</strong><div class="small text-secondary">No downloads</div></div>
+<div class="col-6 col-lg-3"><strong>India-wide</strong><div class="small text-secondary">Shipping support</div></div>
+<div class="col-6 col-lg-3"><strong>{% if site_settings.prepaid_discount_percent %}{{ site_settings.prepaid_discount_percent }}% off{% else %}Prepaid{% endif %}</strong><div class="small text-secondary">On prepaid orders</div></div>
+<div class="col-6 col-lg-3"><strong>GST</strong><div class="small text-secondary">Invoice on every order</div></div>
+</div></div></section>
+
+<section class="section" id="why"><div class="container">
+<div class="text-center reveal">
+  <div class="eyebrow">The {{ SITE_NAME }} idea</div>
+  <h2 class="display-6 mt-2">Learn. Write. Grow.</h2>
+  <p class="mx-auto text-secondary" style="max-width:650px">The brand identity is built around an open notebook, a pencil, a bookmark and the moment an idea finally clicks.</p>
+</div>
+<div class="row g-4 mt-4">
+  <div class="col-lg-4 reveal"><div class="trust-card"><div class="icon-circle mb-3">01</div><h3>Learn</h3><p>Clear explanations that respect a beginner's time. Nothing is there to look clever.</p></div></div>
+  <div class="col-lg-4 reveal"><div class="trust-card"><div class="icon-circle mb-3">02</div><h3>Write</h3><p>Handwriting builds memory. The brand keeps a human, hand-made feel in every touchpoint.</p></div></div>
+  <div class="col-lg-4 reveal"><div class="trust-card"><div class="icon-circle mb-3">03</div><h3>Grow</h3><p>From first print() to data structures, the notes grow with the reader.</p></div></div>
+</div>
+</div></section>
 
 {% if featured_products %}
-<section class="bg-white border-y border-slate-200">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-slate-900">Featured products</h2>
-      <a href="{% url 'catalog:product_list' %}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View all &rarr;</a>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {% for product in featured_products %}
-        {% include "partials/product_card.html" %}
-      {% endfor %}
-    </div>
-  </div>
-</section>
+<section class="section section-soft"><div class="container">
+<div class="d-flex justify-content-between align-items-end mb-4">
+  <div><div class="eyebrow">Featured collection</div><h2 class="mt-2">Start with a book.</h2></div>
+  <a href="{% url 'catalog:product_list' %}" class="btn btn-brand">View all</a>
+</div>
+<div class="row g-4">
+  {% for product in featured_products %}<div class="col-md-6 col-lg-4 reveal">{% include "partials/product_card.html" %}</div>{% endfor %}
+</div>
+</div></section>
 {% endif %}
 
-<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-slate-900">New arrivals</h2>
-    <a href="{% url 'catalog:product_list' %}?sort=newest" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View all &rarr;</a>
-  </div>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    {% for product in new_arrivals %}
-      {% include "partials/product_card.html" %}
-    {% empty %}
-      <p class="text-slate-500 col-span-full">No products yet — check back soon, or add some from the admin.</p>
-    {% endfor %}
-  </div>
-</section>
+{% if bundles %}
+<section class="section"><div class="container"><div class="row align-items-center g-5">
+<div class="col-lg-6 reveal">
+  <div class="eyebrow">Bundle smarter</div>
+  <h2 class="display-6 mt-2">One book or a lower combined bundle.</h2>
+  <p class="text-secondary">Buy a single subject book, or save with a Smart Bundle — bundle stock follows the books inside it.</p>
+  <a href="{% url 'catalog:product_list' %}" class="btn btn-brand">See bundle options</a>
+</div>
+<div class="col-lg-6 reveal"><div class="table-brand p-2"><table class="table mb-0 align-middle">
+  <thead><tr><th>Bundle</th><th>Price</th><th>Type</th></tr></thead>
+  <tbody>
+  {% for bundle in bundles %}
+    <tr><td><a href="{{ bundle.get_absolute_url }}">{{ bundle.name }}</a></td><td>&#8377;{{ bundle.price }}</td><td>Bundle</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+</div></div></section>
+{% endif %}
 
-<section class="bg-slate-900 text-white">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 grid sm:grid-cols-3 gap-8 text-center">
-    <div>
-      <p class="text-3xl font-extrabold text-accent-500">10k+</p>
-      <p class="text-slate-300 text-sm mt-1">Students taught</p>
-    </div>
-    <div>
-      <p class="text-3xl font-extrabold text-accent-500">4.8/5</p>
-      <p class="text-slate-300 text-sm mt-1">Average rating</p>
-    </div>
-    <div>
-      <p class="text-3xl font-extrabold text-accent-500">24/7</p>
-      <p class="text-slate-300 text-sm mt-1">Instant digital delivery</p>
-    </div>
-  </div>
-</section>
+<section class="section-dark section"><div class="container"><div class="row g-4 text-center">
+<div class="col-6 col-lg-3 reveal"><div class="stats-number">{{ book_count }}</div><div>subject books</div></div>
+<div class="col-6 col-lg-3 reveal"><div class="stats-number">{{ site_settings.processing_note|default:"1–2" }}</div><div>processing</div></div>
+<div class="col-6 col-lg-3 reveal"><div class="stats-number">3&ndash;7</div><div>business days delivery</div></div>
+<div class="col-6 col-lg-3 reveal"><div class="stats-number">COD</div><div>+ prepaid available</div></div>
+</div></div></section>
 
+{% if testimonials %}
+<section class="section"><div class="container">
+<div class="text-center reveal mb-4"><div class="eyebrow">What learners say</div><h2 class="mt-2">Real reviews, nothing invented.</h2></div>
+<div class="row g-4">
+  {% for t in testimonials %}
+  <div class="col-md-4 reveal"><div class="trust-card">
+    <p class="text-secondary">&ldquo;{{ t.quote }}&rdquo;</p>
+    <strong>{{ t.author_name }}</strong>{% if t.platform %}<div class="small text-secondary">via {{ t.platform }}</div>{% endif %}
+  </div></div>
+  {% endfor %}
+</div>
+</div></section>
+{% endif %}
 {% endblock %}

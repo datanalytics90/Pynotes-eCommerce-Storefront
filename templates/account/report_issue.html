@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Report an issue | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">Order {{ order.order_number }}</div>
+  <h1>Report a damaged or wrong item.</h1>
+  <p class="text-secondary">{% if order.issue_window_open %}You're within the {{ site_settings.issue_window_hours }}-hour reporting window.{% else %}The {{ site_settings.issue_window_hours }}-hour window has passed, but you can still send us details.{% endif %}</p>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row justify-content-center"><div class="col-lg-6">
+<form method="post" enctype="multipart/form-data" class="card-clean p-4">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="mb-3">
+      <label class="form-label">{{ field.label }}</label>{{ field }}
+      {% if field.errors %}<p class="text-danger small mt-1">{{ field.errors.0 }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-brand w-100">Submit report</button>
+</form>
+</div></div>
+</div></section>
+{% endblock %}

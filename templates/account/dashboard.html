@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}My account | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="eyebrow">My account</div>
+  <h1>Hi, {{ user.first_name|default:user.email }}.</h1>
+</div></section>
+<section class="section pt-5"><div class="container">
+<div class="row g-4">
+<div class="col-lg-3">{% include "partials/account_nav.html" with active="dashboard" %}</div>
+<div class="col-lg-9">
+  <div class="card-clean p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Recent orders</h2>
+      <a href="{% url 'orders:order_history' %}" class="small">View all</a>
+    </div>
+    {% for order in orders %}
+      <div class="d-flex justify-content-between small border-bottom py-2">
+        <span class="font-monospace">{{ order.order_number|truncatechars:13 }}</span>
+        <span class="badge rounded-pill text-bg-light">{{ order.get_status_display }}</span>
+        <strong>&#8377;{{ order.total }}</strong>
+      </div>
+    {% empty %}
+      <p class="text-secondary small mb-0">No orders yet.</p>
+    {% endfor %}
+  </div>
+  <div class="card-clean p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Saved addresses</h2>
+      <a href="{% url 'accounts:addresses' %}" class="small">Manage</a>
+    </div>
+    {% for address in addresses %}
+      <p class="small border-bottom py-2 mb-0">{{ address.full_name }} &middot; {{ address.city }}, {{ address.state }}</p>
+    {% empty %}
+      <p class="text-secondary small mb-0">No addresses saved yet.</p>
+    {% endfor %}
+  </div>
+</div>
+</div>
+</div></section>
+{% endblock %}

@@ -4,7 +4,7 @@ import factory
 from django.utils import timezone
 
 from apps.accounts.models import Address, User
-from apps.catalog.models import Category, Coupon, Product
+from apps.catalog.models import BundleItem, Category, Coupon, Product
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -30,10 +30,10 @@ class AddressFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     full_name = "Jane Doe"
     line1 = "123 Main St"
-    city = "Springfield"
-    state = "IL"
-    postal_code = "62704"
-    country = "United States"
+    city = "Bengaluru"
+    state = "Karnataka"
+    postal_code = "560001"
+    country = "India"
     is_default = True
 
 
@@ -50,13 +50,23 @@ class ProductFactory(factory.django.DjangoModelFactory):
 
     category = factory.SubFactory(CategoryFactory)
     name = factory.Sequence(lambda n: f"Product {n}")
-    description = "A great product for testing."
-    short_description = "Great product."
-    price = Decimal("19.99")
-    sku = factory.Sequence(lambda n: f"SKU-{n}")
+    description = "A great printed coding-notes book for testing."
+    short_description = "Great book."
+    price = Decimal("499.00")
+    sku = factory.Sequence(lambda n: f"PYN-{n}")
     stock = 10
+    hsn_code = "4901"
     is_active = True
-    is_digital = False
+    is_bundle = False
+
+
+class BundleItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = BundleItem
+
+    bundle = factory.SubFactory(ProductFactory, is_bundle=True)
+    book = factory.SubFactory(ProductFactory)
+    quantity = 1
 
 
 class CouponFactory(factory.django.DjangoModelFactory):
