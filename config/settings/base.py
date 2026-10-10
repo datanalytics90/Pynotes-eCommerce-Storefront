@@ -2,6 +2,7 @@
 Base Django settings for Pynotes Store, shared by all environments.
 """
 from pathlib import Path
+
 import dj_database_url
 from decouple import Csv, config
 
