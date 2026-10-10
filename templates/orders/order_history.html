@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Order history — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
+  <h1 class="text-2xl font-extrabold text-slate-900 mb-8">Order history</h1>
+  {% if orders %}
+    <div class="space-y-4">
+      {% for order in orders %}
+        <a href="{% url 'orders:order_detail' order.order_number %}" class="card p-5 flex items-center justify-between hover:border-brand-400 transition">
+          <div>
+            <p class="font-mono text-sm text-slate-500">{{ order.order_number }}</p>
+            <p class="text-xs text-slate-400">{{ order.created_at|date:"M d, Y" }}</p>
+          </div>
+          <span class="badge
+            {% if order.status == 'paid' %}bg-green-100 text-green-800
+            {% elif order.status == 'pending' %}bg-amber-100 text-amber-800
+            {% elif order.status == 'cancelled' or order.status == 'refunded' %}bg-red-100 text-red-800
+            {% else %}bg-slate-100 text-slate-800{% endif %}">
+            {{ order.get_status_display }}
+          </span>
+          <p class="font-bold text-slate-900">${{ order.total }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card p-10 text-center">
+      <p class="text-slate-600 mb-4">You haven't placed any orders yet.</p>
+      <a href="{% url 'catalog:product_list' %}" class="btn-primary">Start shopping</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

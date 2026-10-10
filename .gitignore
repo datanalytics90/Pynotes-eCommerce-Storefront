@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+venv/
+.venv/
+env/
+
+# Django
+*.sqlite3
+/staticfiles/
+/media/
+local_settings.py
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node / Tailwind
+node_modules/
+npm-debug.log*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log

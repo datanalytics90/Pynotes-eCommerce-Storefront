@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }} — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
+  <a href="{% url 'orders:order_history' %}" class="text-sm text-brand-600 font-medium">&larr; Back to orders</a>
+  <div class="flex items-center justify-between mt-4 mb-8">
+    <h1 class="text-2xl font-extrabold text-slate-900">Order {{ order.order_number }}</h1>
+    <span class="badge
+      {% if order.status == 'paid' %}bg-green-100 text-green-800
+      {% elif order.status == 'pending' %}bg-amber-100 text-amber-800
+      {% elif order.status == 'cancelled' or order.status == 'refunded' %}bg-red-100 text-red-800
+      {% else %}bg-slate-100 text-slate-800{% endif %}">
+      {{ order.get_status_display }}
+    </span>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <div class="md:col-span-2 card p-6 space-y-3">
+      <h2 class="font-bold text-slate-900 mb-2">Items</h2>
+      {% for item in order.items.all %}
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-600">{{ item.quantity }} × {{ item.product_name }}</span>
+          <span class="font-medium">${{ item.line_total }}</span>
+        </div>
+      {% endfor %}
+      <dl class="space-y-2 text-sm border-t border-slate-200 pt-3">
+        <div class="flex justify-between"><dt class="text-slate-500">Subtotal</dt><dd>${{ order.subtotal }}</dd></div>
+        {% if order.discount_total %}<div class="flex justify-between"><dt class="text-slate-500">Discount</dt><dd class="text-green-700">-${{ order.discount_total }}</dd></div>{% endif %}
+        <div class="flex justify-between"><dt class="text-slate-500">Shipping</dt><dd>${{ order.shipping_cost }}</dd></div>
+        <div class="flex justify-between text-base font-bold"><dt>Total</dt><dd>${{ order.total }}</dd></div>
+      </dl>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-bold text-slate-900 mb-2">Shipping address</h2>
+      <p class="text-sm text-slate-600">
+        {{ order.shipping_full_name }}<br>
+        {{ order.shipping_line1 }}{% if order.shipping_line2 %}, {{ order.shipping_line2 }}{% endif %}<br>
+        {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}<br>
+        {{ order.shipping_country }}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

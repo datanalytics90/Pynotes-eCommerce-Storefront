@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{% if address %}Edit address{% else %}Add address{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-10">
+  <h1 class="text-2xl font-extrabold text-slate-900 mb-6">{% if address %}Edit address{% else %}Add address{% endif %}</h1>
+  <form method="post" class="card p-6 space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-sm text-red-600 mt-1">{{ field.errors.0 }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary w-full">Save address</button>
+  </form>
+</section>
+{% endblock %}

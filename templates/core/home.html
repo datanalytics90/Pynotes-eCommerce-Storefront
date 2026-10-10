@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-slate-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28 grid lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <span class="badge bg-white/10 text-brand-100 mb-4">New: Python 2026 Bootcamp bundle</span>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+        Learn Python. Ship projects. <span class="text-accent-500">Look the part.</span>
+      </h1>
+      <p class="mt-5 text-lg text-brand-100 max-w-xl">
+        Ebooks, notebooks, video courses and dev merch for people who build with Python and data —
+        curated by {{ SITE_NAME }}.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'catalog:product_list' %}" class="btn-accent text-base px-6 py-3">Shop all products</a>
+        <a href="{% url 'core:about' %}" class="btn bg-white/10 text-white hover:bg-white/20 text-base px-6 py-3">Our story</a>
+      </div>
+    </div>
+    <div class="hidden lg:grid grid-cols-2 gap-4">
+      {% for product in new_arrivals|slice:":4" %}
+        <div class="rounded-xl bg-white/10 backdrop-blur p-4">
+          {% with image=product.images.first %}
+            {% if image %}
+              <img src="{{ image.image.url }}" class="rounded-lg h-28 w-full object-cover" alt="{{ product.name }}">
+            {% endif %}
+          {% endwith %}
+          <p class="mt-2 text-sm font-semibold truncate">{{ product.name }}</p>
+          <p class="text-accent-500 font-bold">${{ product.price }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+  <h2 class="text-2xl font-bold text-slate-900 mb-6">Shop by category</h2>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    {% for category in categories %}
+      <a href="{{ category.get_absolute_url }}" class="card p-4 text-center hover:border-brand-400 hover:shadow-md transition">
+        <div class="mx-auto mb-3 h-12 w-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 font-bold">
+          {{ category.name|first }}
+        </div>
+        <p class="text-sm font-semibold text-slate-800">{{ category.name }}</p>
+      </a>
+    {% empty %}
+      <p class="text-slate-500 col-span-full">Categories will show up here once products are added.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if featured_products %}
+<section class="bg-white border-y border-slate-200">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-slate-900">Featured products</h2>
+      <a href="{% url 'catalog:product_list' %}" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View all &rarr;</a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {% for product in featured_products %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-slate-900">New arrivals</h2>
+    <a href="{% url 'catalog:product_list' %}?sort=newest" class="text-sm font-semibold text-brand-600 hover:text-brand-700">View all &rarr;</a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for product in new_arrivals %}
+      {% include "partials/product_card.html" %}
+    {% empty %}
+      <p class="text-slate-500 col-span-full">No products yet — check back soon, or add some from the admin.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="bg-slate-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 grid sm:grid-cols-3 gap-8 text-center">
+    <div>
+      <p class="text-3xl font-extrabold text-accent-500">10k+</p>
+      <p class="text-slate-300 text-sm mt-1">Students taught</p>
+    </div>
+    <div>
+      <p class="text-3xl font-extrabold text-accent-500">4.8/5</p>
+      <p class="text-slate-300 text-sm mt-1">Average rating</p>
+    </div>
+    <div>
+      <p class="text-3xl font-extrabold text-accent-500">24/7</p>
+      <p class="text-slate-300 text-sm mt-1">Instant digital delivery</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

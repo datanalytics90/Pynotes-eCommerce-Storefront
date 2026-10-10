@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}About us — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+  <h1 class="text-3xl font-extrabold text-slate-900 mb-6">About {{ SITE_NAME }}</h1>
+  <div class="prose prose-slate max-w-none">
+    <p>
+      {{ SITE_NAME }} is an online storefront built for Python developers and data practitioners.
+      We curate ebooks, notebooks, video courses and developer merch to help you learn faster and
+      build with confidence.
+    </p>
+    <p>
+      Every digital product is delivered instantly after checkout, and every physical order ships
+      worldwide with tracked delivery. Our small team personally reviews every product before it
+      goes live in the catalog.
+    </p>
+    <h2>Need help?</h2>
+    <p>
+      Reach out any time via our <a href="{% url 'core:contact' %}" class="text-brand-600">contact page</a> —
+      we usually reply within one business day.
+    </p>
+  </div>
+</section>
+{% endblock %}
